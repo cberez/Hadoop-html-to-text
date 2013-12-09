@@ -1,5 +1,6 @@
 package fr.ece.html_to_text;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
         
 import org.apache.hadoop.fs.Path;
@@ -10,6 +11,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.w3c.tidy.Tidy;
 
 public class Html_to_text {
 
@@ -37,10 +39,17 @@ public class Html_to_text {
 
 	
 	 public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
-		
-	        
+		 
 	    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 	       
+	    	System.out.println("Starting JTidy");
+	        Tidy tidy = new Tidy();
+	        tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
+	        tidy.setQuiet(true);
+	        tidy.setShowWarnings(false);
+	        tidy.parseDOM(new ByteArrayInputStream(value.getBytes()), System.out);
+	    	
+	    	
 	    	/* 
 	    	 * TODO : Le taff du Map
 	    	 *  - Convertir le html en texte avec JTidy
