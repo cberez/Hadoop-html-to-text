@@ -22,43 +22,38 @@
 			<version>4.2.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>jtidy</groupId>
-		    <artifactId>jtidy</artifactId>
-		    <version>4aug2000r7-dev</version>
-		</dependency>
-		<dependency>
     		<groupId>log4j</groupId>
     		<artifactId>log4j</artifactId>
     		<version>1.2.17</version>
 		</dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.7.3</version>
-    </dependency>
+	    <dependency>
+	      <groupId>commons-httpclient</groupId>
+	      <artifactId>commons-httpclient</artifactId>
+	      <version>3.1</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.jsoup</groupId>
+	      <artifactId>jsoup</artifactId>
+	      <version>1.7.3</version>
+	    </dependency>
 	</dependencies>
 	<repositories>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>never</updatePolicy>
-        <checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-      <id>HDPReleases</id>
-      <name>HDP Releases</name>
-      <url>http://repo.hortonworks.com/content/repositories/releases</url>
-      <layout>default</layout>
-    </repository>
+	    <repository>
+	      <releases>
+	        <enabled>true</enabled>
+	        <updatePolicy>always</updatePolicy>
+	        <checksumPolicy>warn</checksumPolicy>
+	      </releases>
+	      <snapshots>
+	        <enabled>false</enabled>
+	        <updatePolicy>never</updatePolicy>
+	        <checksumPolicy>fail</checksumPolicy>
+	      </snapshots>
+	      <id>HDPReleases</id>
+	      <name>HDP Releases</name>
+	      <url>http://repo.hortonworks.com/content/repositories/releases</url>
+	      <layout>default</layout>
+	    </repository>
 	</repositories>
 </project>
 
