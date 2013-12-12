@@ -3,8 +3,6 @@ package fr.ece.html_to_text;
 import java.io.IOException;
         
 
-
-import java.io.PrintWriter;
 import java.io.StringReader;
 
 import org.apache.hadoop.fs.Path;
@@ -12,7 +10,6 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.lucene.analysis.Tokenizer;
@@ -23,6 +20,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 public class Html_to_text {
 
@@ -33,23 +31,27 @@ public class Html_to_text {
 		    
 		Configuration conf = new Configuration();
 		Job job = new Job(conf, "html_to_text");
-	    
-		job.setOutputKeyClass(Text.class);
-		//On a pas besoin de la clé de sortie, donc on met null
-	 	job.setOutputValueClass(NullWritable.class);
- 		job.setMapperClass(Map.class);
+		job.setMapperClass(Map.class);
+ 		job.setJarByClass(Html_to_text.class);
  		
-		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputKeyClass(NullWritable.class);
+		//On a pas besoin de la clé de sortie, donc on met null
+	 	job.setOutputValueClass(Text.class);
+ 		job.setNumReduceTasks(0);
+		
+ 		job.setInputFormatClass(WholeTextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		job.waitForCompletion(true);
 	}
 	
-	public static class Map extends Mapper<LongWritable, Text, Text, NullWritable> {
+	public static class Map extends Mapper<NullWritable, Text, NullWritable,Text> {
 		 
-	    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-	    	String text = Jsoup.parse(value.toString()).select("body").text();
+	    public void map(NullWritable key, Text value, Context context) throws IOException, InterruptedException {
+	    	Document doc = Jsoup.parse(value.toString());
+	    	doc.body().select("script, jscript").remove();
+	    	String text = doc.body().text();
 	    	FrenchAnalyzer analyzer = new FrenchAnalyzer(Version.LUCENE_42);
 	    	Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_42,new StringReader(text));
 	    	final StandardFilter standardFilter = new StandardFilter(Version.LUCENE_42, tokenizer);	
@@ -62,7 +64,7 @@ public class Html_to_text {
 	    		while(stopFilter.incrementToken()) {
 	    			text +=' '+charTermAttribute.toString().toString();
 	    		}
-	    		context.write(new Text(text), NullWritable.get());
+	    		context.write(NullWritable.get(), new Text(text));
 	    	}
 	    	stopFilter.close();
 	    	analyzer.close();
